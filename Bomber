@@ -1,0 +1,25 @@
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+
+/**
+ * 
+ */
+
+/**
+ * @author Nick
+ *
+ */
+public class Bomber extends Enemy {
+	
+
+	/**
+	 * 
+	 */
+	public Bomber(Point location) {
+		super(location);
+	}
+	
+
+
+}
