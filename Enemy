@@ -1,0 +1,110 @@
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+/**
+ * 
+ */
+
+/**
+ * @author Nick
+ *
+ */
+public class Enemy {
+	
+	protected Point location;
+	protected int xAxis;
+	protected int yAxis;
+	protected double Speed;
+	protected int age;
+	protected int maxAge;
+	protected Image myImage;
+	private JLabel enemy;
+	private ImageIcon enemyIcon;
+	
+	/**
+	 * The constructor takes the following arguments to build an enemy object
+	 * of either a bomber or satellite class.
+	 * @param l takes the point location for the enemy
+	 * @param s 
+	 * @param i 
+	 * @param x takes starting x value for the enemy (for bomber and satellite, should be 0)
+	 * @param y takes the starting y value for the enemy
+	 */
+	public Enemy(Point l) {
+		super();
+		location = l;
+
+	}
+	
+	/**
+	 * Method for getting the location of the enemy object
+	 * @return location of the object
+	 */
+	public Point getLocation(){
+		return location;
+	}
+	
+	/**
+	 * Method for setting the location of the object
+	 * @param l is the position of the object
+	 */
+	public void setLocation(Point l){
+		location = l;
+	}
+	
+	
+	/**
+	 * Method to move the object along the x-axis(bombers and satellites only
+	 * move left and right on the x axis).
+	 */
+	public void move() {
+		location.x += 1;
+	}
+	
+	/**
+	 * Method to draw the object with an image
+	 * @param g
+	 */
+	public void draw(Graphics g){
+		Graphics2D g2 = (Graphics2D) g;
+		g2.drawImage(myImage, location.x, location.y, 70, 70, null);
+		
+	}
+	
+	/**
+	 * Method to get the image of the object
+	 * @return the image 
+	 */
+	public JLabel getMyImage() {
+		
+		try{
+			myImage = ImageIO.read(new File("Bomber.jpg"));
+			enemyIcon = new ImageIcon(myImage);
+		}
+		
+		catch(IOException e){
+			System.err.println("Image file for bomber not found!");
+		}
+		
+		enemy = new JLabel(enemyIcon);
+		enemy.setIcon(enemyIcon);
+		return enemy;
+	}
+	
+	/**
+	 * Method to change the image of the object
+	 * @param i
+	 */
+	/*
+	public void setMyImage(Image i){
+		myImage = i;
+	}*/
+}
