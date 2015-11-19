@@ -1,0 +1,263 @@
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+//import Weapon.MyMouseListener;
+//import Weapon.MyMouseMotionListener;
+
+/**
+ * @author mc1838
+ *
+ */
+public class GameWindow extends JFrame
+{
+	protected JPanel backPanel;
+	protected Weapon weapon = new Weapon();
+	protected JLabel crosshair;
+	private Battery currentBattery = new Battery();
+	private int width = 800;
+	private int height = 600;
+	private javax.swing.Timer timer;
+	
+	private JLabel testText = new JLabel(""); //TEST
+	
+	private boolean dragFired = false; //allow to be fired once upon drag
+	
+	/**
+	 * 
+	 */
+	//private ArrayList<Enemy> enemyObjects;
+	public static ImageIcon bomberImg = new ImageIcon("Bomber.jpg");
+	int x = width / 2;
+	int y = height / 2;
+	protected JLabel enemy;
+	protected Bomber bomber = new Bomber(new Point(x, y));
+	
+	/**
+	 * The window contains the game Screen.
+	 */
+	public GameWindow() 
+	{
+		//Set base properties:
+		this.setSize(width, height);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Missile Command");
+		this.setBackground(Color.BLACK);
+		
+		//Add listeners for mouse events:
+		addMouseListener(new MyMouseListener());
+		addMouseMotionListener(new MyMouseMotionListener());
+		
+		//Create background panel:
+		backPanel = new JPanel();
+		backPanel.setBackground(Color.BLACK);
+		
+		//Add crosshair from Weapon:
+		crosshair = weapon.getImage();
+		backPanel.add(crosshair);
+		add(backPanel);
+		
+		//Add enemy bomber or satellite
+		//enemyObjects = new ArrayList<Enemy>();
+		enemy = bomber.getMyImage();
+		backPanel.add(enemy);
+		
+		timer = new javax.swing.Timer(30, new TimerListener());
+		timer.start();
+		
+		//Add TEST TEXT to background panel:
+		Font testFont = new Font("Arial", Font.BOLD, 32);
+		testText.setFont(testFont);
+		testText.setForeground(Color.WHITE);
+		testText.setVisible(false); //TEST
+		backPanel.add(testText); //TEST
+		
+		//Set final properties:
+		hideMouseCursor(); //show crosshair only!
+		setResizable(false); //static size!
+		setVisible(true);
+	}
+	
+	/**
+	 * Create a blank, transparent mouse cursor 
+	 * so that only the crosshairs are shown.
+	 */
+	public void hideMouseCursor()
+	{
+		//Transparent dummy img:
+		BufferedImage cursorImg = new BufferedImage(16,16, BufferedImage.TYPE_INT_ARGB);
+		
+		//Create the blank cursor:
+		Cursor blankCursor = Toolkit.getDefaultToolkit()
+				.createCustomCursor(cursorImg, new Point(0,0), "blankcursor");
+		
+		//Set JFrame cursor:
+		this.getContentPane().setCursor(blankCursor);
+	}
+	
+	private class MyMouseListener implements MouseListener
+	{
+
+		@Override
+		public void mouseClicked(MouseEvent arg0) 
+		{
+			//Fire weapon, if mouse is in game window:
+			if (weapon.isMouseInWindow())
+			{
+				//Check mouse position (thirds of screen):
+				if (arg0.getX() <= (width / 3.0))
+				{
+					currentBattery.setLeft(true);
+					currentBattery.fireLeft();
+					testText.setVisible(true);
+					testText.setText("LEFT");
+					
+				}
+				
+				else if ((arg0.getX() > (width / 3.0)) && 
+						(arg0.getX() <= (2.0 * width / 3.0)) )
+				{
+					currentBattery.setCenter(true);
+					currentBattery.fireCenter();
+					testText.setVisible(true);
+					testText.setText("CENTER");
+				}
+				
+				else if (arg0.getX() > (2.0 * width / 3.0))
+				{
+					currentBattery.setRight(true);
+					currentBattery.fireRight();
+					testText.setVisible(true);
+					testText.setText("RIGHT");
+				}
+			}
+			
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent arg0) 
+		{
+			weapon.setMouseInWindow(true);
+			crosshair.setVisible(true);
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) 
+		{
+			weapon.setMouseInWindow(false);
+			crosshair.setVisible(false);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) 
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) 
+		{
+			dragFired = false; //release flag upon mouse btn release
+		}
+		
+	}
+	
+	private class MyMouseMotionListener implements MouseMotionListener
+	{
+
+		@Override
+		public void mouseDragged(MouseEvent arg0) 
+		{
+			//Allow firing ONCE during drag, then set flag:
+			if (!dragFired)
+			{
+				//Make sure mouse is in window:
+				if (weapon.isMouseInWindow())
+				{
+					//Check mouse position (thirds of screen):
+					if (arg0.getX() <= (width / 3.0))
+					{
+						currentBattery.setLeft(true);
+						currentBattery.fireLeft();
+						testText.setVisible(true);
+						testText.setText("LEFT");
+						
+					}
+					
+					else if ((arg0.getX() > (width / 3.0)) && 
+							(arg0.getX() <= (2.0 * width / 3.0)) )
+					{
+						currentBattery.setCenter(true);
+						currentBattery.fireCenter();
+						testText.setVisible(true);
+						testText.setText("CENTER");
+					}
+					
+					else if (arg0.getX() > (2.0 * width / 3.0))
+					{
+						currentBattery.setRight(true);
+						currentBattery.fireRight();
+						testText.setVisible(true);
+						testText.setText("RIGHT");
+					}
+					dragFired = true; //set drag flag
+				}
+			} //end drag fire
+			
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent arg0) 
+		{
+			if (weapon.isMouseInWindow())
+				crosshair.setLocation(arg0.getX()-24, arg0.getY()-45); //crosshair's img is 45x45, use radius offset! (was -22, -22)
+		}
+		
+	}
+	
+	/**
+	 * Add enemy bomber and satellites
+	 */
+	
+	public void paintComponent(Graphics g){
+		super.paintComponents(g);
+		bomber.draw(g);
+	}
+
+	
+	public class TimerListener implements ActionListener{
+		
+		public void actionPerformed(ActionEvent arg0){
+			//bomber.setLocation(new Point(50, 50));
+			bomber.move();
+			repaint();
+		}
+	}
+	
+	/**
+	 * Create the window.  
+	 * @param args Ignored.
+	 */
+	public static void main(String[] args) 
+	{
+		GameWindow window = new GameWindow();
+	}
+
+}
